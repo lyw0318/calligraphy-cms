@@ -105,6 +105,11 @@ export default [
             component: './List/TableList',
           },
           {
+            path: '/list/table-list-demo',
+            name: 'searchtable',
+            component: './List/TableListDemo',
+          },
+          {
             path: '/list/basic-list',
             name: 'basiclist',
             component: './List/BasicList',
