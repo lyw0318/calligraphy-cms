@@ -80,9 +80,8 @@ export default {
   },
   proxy: {
     '/calligraphy': {
-      target: 'http://api.lyw1024.online/calligraphy',
+      target: 'http://127.0.0.1:3004',
       changeOrigin: true,
-      pathRewrite: { '^/calligraphy': '' },
     },
   },
   ignoreMomentLocale: true,

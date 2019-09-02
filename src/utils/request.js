@@ -32,6 +32,7 @@ const errorHandler = error => {
   const errortext = codeMessage[response.status] || response.statusText;
   const { status, url } = response;
 
+  console.log('response###', response);
   if (status === 401) {
     notification.error({
       message: '未登录或登录已过期，请重新登录。',

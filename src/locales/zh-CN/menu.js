@@ -1,4 +1,8 @@
 export default {
+  'menu.student': '学员管理',
+  'menu.student.taste': '体验课',
+  'menu.student.system': '系统程',
+
   'menu.home': '首页',
   'menu.login': '登录',
   'menu.register': '注册',

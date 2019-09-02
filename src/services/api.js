@@ -15,6 +15,7 @@ export async function queryRule(params) {
 
 export async function queryRuleDemo(params) {
   return request(`/calligraphy/course/packagelist?${stringify(params)}`);
+  // return request(`/calligraphy/mine/course/complex_list?${stringify(params)}`);
 }
 
 export async function removeRule(params) {
@@ -109,6 +110,13 @@ export async function updateFakeList(params) {
 
 export async function fakeAccountLogin(params) {
   return request('/api/login/account', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function accountLogin(params) {
+  return request('/calligraphy/manager/login', {
     method: 'POST',
     data: params,
   });
