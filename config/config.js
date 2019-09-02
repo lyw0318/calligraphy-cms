@@ -80,7 +80,7 @@ export default {
   },
   proxy: {
     '/calligraphy': {
-      target: 'http://127.0.0.1:3004',
+      target: 'http://10.152.10.197:3004',
       changeOrigin: true,
     },
   },

@@ -7,6 +7,7 @@ export default {
     data: {
       list: [],
       pagination: {},
+      courseList: [],
     },
   },
 
@@ -22,7 +23,9 @@ export default {
       const response = yield call(queryRuleDemo, payload);
       yield put({
         type: 'save',
-        payload: response,
+        payload: {
+          courseList: response.data,
+        },
       });
     },
     *add({ payload, callback }, { call, put }) {
@@ -52,10 +55,10 @@ export default {
   },
 
   reducers: {
-    save(state, action) {
+    save(state, { payload }) {
       return {
         ...state,
-        data: action.payload,
+        ...payload,
       };
     },
   },
