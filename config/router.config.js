@@ -40,6 +40,11 @@ export default [
             name: 'system',
             component: './List/CourseStudent',
           },
+          {
+            path: '/student/list',
+            name: 'list',
+            component: './Student/StudentList',
+          },
         ],
       },
 

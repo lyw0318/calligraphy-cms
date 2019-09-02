@@ -61,12 +61,12 @@ const CreateForm = Form.create()(props => {
 });
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ rule, loading }) => ({
-  rule,
-  loading: loading.models.rule,
+@connect(({ student, loading }) => ({
+  student,
+  loading: loading.models.student,
 }))
 @Form.create()
-class TableListDemo extends PureComponent {
+class StudentList extends PureComponent {
   state = {
     modalVisible: false,
     formValues: {},
@@ -74,8 +74,8 @@ class TableListDemo extends PureComponent {
 
   columns = [
     {
-      title: '课程名称',
-      dataIndex: 'name',
+      title: '订单号',
+      dataIndex: 'cOrderNo',
       render: text => <p>{text}</p>,
     },
     {
@@ -124,7 +124,7 @@ class TableListDemo extends PureComponent {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/fetchDemo',
+      type: 'student/fetch',
     });
   }
 
@@ -148,7 +148,7 @@ class TableListDemo extends PureComponent {
     }
 
     dispatch({
-      type: 'rule/fetch',
+      type: 'student/fetch',
       payload: params,
     });
   };
@@ -161,7 +161,7 @@ class TableListDemo extends PureComponent {
       formValues: {},
     });
     dispatch({
-      type: 'rule/fetch',
+      type: 'student/fetch',
       payload: {},
     });
   };
@@ -191,7 +191,7 @@ class TableListDemo extends PureComponent {
       });
 
       dispatch({
-        type: 'rule/fetch',
+        type: 'student/fetch',
         payload: values,
       });
     });
@@ -206,7 +206,7 @@ class TableListDemo extends PureComponent {
   handleAdd = fields => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/add',
+      type: 'student/add',
       payload: {
         desc: fields.desc,
       },
@@ -220,7 +220,7 @@ class TableListDemo extends PureComponent {
     const { dispatch } = this.props;
     const { formValues } = this.state;
     dispatch({
-      type: 'rule/update',
+      type: 'student/update',
       payload: {
         query: formValues,
         body: {
@@ -309,7 +309,7 @@ class TableListDemo extends PureComponent {
 
   render() {
     const {
-      rule: { courseList },
+      student: { list },
       loading,
     } = this.props;
     const { modalVisible } = this.state;
@@ -327,7 +327,7 @@ class TableListDemo extends PureComponent {
                 新建
               </Button>
             </div>
-            <Table rowKey="id" loading={loading} dataSource={courseList} columns={this.columns} />
+            <Table rowKey="cOrderNo" loading={loading} dataSource={list} columns={this.columns} />
           </div>
         </Card>
         <CreateForm {...parentMethods} modalVisible={modalVisible} />
@@ -336,4 +336,4 @@ class TableListDemo extends PureComponent {
   }
 }
 
-export default TableListDemo;
+export default StudentList;
