@@ -5,7 +5,6 @@ export async function queryStudent(params) {
     method: 'POST',
     data: {
       ...params,
-      method: 'delete',
     },
   });
 }

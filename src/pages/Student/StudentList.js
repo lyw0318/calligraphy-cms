@@ -13,7 +13,6 @@ import {
   Table,
   Divider,
   InputNumber,
-  DatePicker,
   Modal,
   message,
 } from 'antd';
@@ -41,7 +40,7 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title="新建课程"
+      title="参课进度"
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
@@ -73,49 +72,71 @@ class StudentList extends PureComponent {
   };
 
   columns = [
+    // {
+    //   title: '订单号',
+    //   dataIndex: 'cOrderNo',
+    //   render: text => <p>{text}</p>,
+    // },
     {
-      title: '订单号',
-      dataIndex: 'cOrderNo',
-      render: text => <p>{text}</p>,
+      title: '课程名',
+      dataIndex: 'courseName',
     },
     {
       title: '期数',
-      dataIndex: 'issueStr',
+      dataIndex: 'issue',
+    },
+    // {
+    //   title: '开课时间',
+    //   dataIndex: 'startTime',
+    //   sorter: true,
+    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
+    // },
+    {
+      title: '报名时间',
+      dataIndex: 'createTime',
+      sorter: true,
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
     },
     {
-      title: '价格',
-      dataIndex: 'price',
-      sorter: true,
-      render: val => `${val} 元`,
-      needTotal: true,
+      title: '微信昵称',
+      dataIndex: 'nickname',
     },
     {
-      title: '实际价格',
-      dataIndex: 'curPrice',
-      sorter: true,
-      render: val => `${val} 元`,
+      title: '微信头像',
+      dataIndex: 'headimgurl',
+      render: val => {
+        return val && <img src={val} width="42" height="42" alt="logo" />;
+      },
     },
     {
-      title: '开始时间',
-      dataIndex: 'startTime',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      title: '收件人',
+      dataIndex: 'name',
     },
     {
-      title: '结束时间',
-      dataIndex: 'endEnroll',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
+      title: '电话',
+      dataIndex: 'phone',
+    },
+    {
+      title: '地址',
+      dataIndex: 'address',
+      render: val => {
+        if (val) {
+          return `${JSON.parse(val).city.toString()} ${JSON.parse(val).address.toString()}`;
+        }
+        return val;
+      },
     },
     {
       title: '操作',
       render: () => (
         <Fragment>
-          <a href="javascript:;" onClick={() => this.handleModalVisible(true)}>
-            新建
+          <a href="javascript:;" onClick={() => this.handleSign(true)}>
+            标注
           </a>
           <Divider type="vertical" />
-          <a href="">查询</a>
+          <a href="javascript:;" onClick={() => this.handleModalVisible(true)}>
+            详情
+          </a>
         </Fragment>
       ),
     },
@@ -197,6 +218,18 @@ class StudentList extends PureComponent {
     });
   };
 
+  handleSign = fields => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'student/add',
+      payload: {
+        desc: fields.desc,
+      },
+    });
+
+    message.success('标注成功');
+  };
+
   handleModalVisible = flag => {
     this.setState({
       modalVisible: !!flag,
@@ -244,52 +277,48 @@ class StudentList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
+            <FormItem label="课程类型">
+              {getFieldDecorator('groupId')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  <Option value="1">体验课</Option>
+                  <Option value="2">系统课</Option>
                 </Select>
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="调用次数">
-              {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
+            <FormItem label="期数">
+              {getFieldDecorator('issue')(<InputNumber style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
+          {/* <Col md={8} sm={24}>
+            <FormItem label="课程状态">
+              {getFieldDecorator('status')(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="0">预约</Option>
+                  <Option value="1">报名中</Option>
+                  <Option value="2">准备中</Option>
+                  <Option value="3">学习中</Option>
+                  <Option value="4">已结课</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>  */}
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="更新日期">
-              {getFieldDecorator('date')(
-                <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
-              )}
+            <FormItem label="微信昵称">
+              {getFieldDecorator('nickname')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status3')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>
-              )}
+            <FormItem label="手机号">
+              {getFieldDecorator('phone')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status4')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>
-              )}
+            <FormItem label="订单号">
+              {getFieldDecorator('cOrderNo')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
         </Row>
@@ -317,16 +346,12 @@ class StudentList extends PureComponent {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
     };
+
     return (
       <PageHeaderWrapper title="查询表格">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderAdvancedForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-                新建
-              </Button>
-            </div>
             <Table rowKey="cOrderNo" loading={loading} dataSource={list} columns={this.columns} />
           </div>
         </Card>
