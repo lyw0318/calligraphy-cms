@@ -28,40 +28,10 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 
-const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible } = props;
-  const okHandle = () => {
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      form.resetFields();
-      handleAdd(fieldsValue);
-    });
-  };
-  return (
-    <Modal
-      destroyOnClose
-      title="参课进度"
-      visible={modalVisible}
-      onOk={okHandle}
-      onCancel={() => handleModalVisible()}
-    >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="课程名称">
-        {form.getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入至少五个字符！', min: 5 }],
-        })(<Input placeholder="请输入" />)}
-      </FormItem>
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="课程期数">
-        {form.getFieldDecorator('issue', {
-          rules: [{ required: true }],
-        })(<InputNumber placeholder="请输入" />)}
-      </FormItem>
-    </Modal>
-  );
-});
-
 /* eslint react/no-multi-comp:0 */
-@connect(({ student, loading }) => ({
+@connect(({ CourseProcess, student, loading }) => ({
   student,
+  CourseProcess,
   loading: loading.models.student,
 }))
 @Form.create()
@@ -76,6 +46,12 @@ class StudentList extends PureComponent {
     //   title: '订单号',
     //   dataIndex: 'cOrderNo',
     //   render: text => <p>{text}</p>,
+    //   hide: true,
+    // },
+    // {
+    //   title: '用户id',
+    //   dataIndex: 'id',
+    //   display: false,
     // },
     {
       title: '课程名',
@@ -94,7 +70,6 @@ class StudentList extends PureComponent {
     {
       title: '报名时间',
       dataIndex: 'createTime',
-      sorter: true,
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
     },
     {
@@ -128,19 +103,80 @@ class StudentList extends PureComponent {
     },
     {
       title: '操作',
-      render: () => (
+      render: record => (
         <Fragment>
           <a href="javascript:;" onClick={() => this.handleSign(true)}>
             标注
           </a>
           <Divider type="vertical" />
-          <a href="javascript:;" onClick={() => this.handleModalVisible(true)}>
+          <a href="javascript:;" onClick={() => this.handleModalVisible(true, record.id)}>
             详情
           </a>
         </Fragment>
       ),
     },
   ];
+
+  processColumns = [
+    // {
+    //   title: '订单号',
+    //   dataIndex: 'cOrderNo',
+    //   render: text => <p>{text}</p>,
+    // },
+    {
+      title: '课程id',
+      dataIndex: 'nid',
+    },
+    {
+      title: '进度',
+      dataIndex: 'status',
+      render: val => {
+        const statusObj = {
+          1: '已解锁',
+          2: '已观看',
+          3: '已上交作品',
+          4: '已自评',
+          5: '点评中',
+          6: '老师已点评',
+          7: '老师已拒绝',
+        };
+        return `${statusObj[val]}`;
+      },
+    },
+    // {
+    //   title: '开课时间',
+    //   dataIndex: 'startTime',
+    //   sorter: true,
+    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
+    // },
+    {
+      title: '完成时间',
+      dataIndex: 'updateTime',
+      sorter: true,
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm')}</span>,
+    },
+  ];
+
+  CreateProcessPanel = Form.create()(props => {
+    const { modalVisible, handleModalVisible } = props;
+    const {
+      CourseProcess: { list },
+      loading,
+    } = this.props;
+    return (
+      <Modal
+        destroyOnClose
+        title="参课进度"
+        visible={modalVisible}
+        onOk={() => handleModalVisible()}
+        onCancel={() => handleModalVisible()}
+      >
+        <div className={styles.tableList}>
+          <Table rowKey="nid" loading={loading} dataSource={list} columns={this.processColumns} />
+        </div>
+      </Modal>
+    );
+  });
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -230,7 +266,17 @@ class StudentList extends PureComponent {
     message.success('标注成功');
   };
 
-  handleModalVisible = flag => {
+  handleModalVisible = (flag, userId) => {
+    if (userId) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'CourseProcess/fetch',
+        payload: {
+          userId,
+        },
+      });
+    }
+
     this.setState({
       modalVisible: !!flag,
     });
@@ -346,6 +392,7 @@ class StudentList extends PureComponent {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
     };
+    const { CreateProcessPanel } = this;
 
     return (
       <PageHeaderWrapper title="查询表格">
@@ -355,7 +402,7 @@ class StudentList extends PureComponent {
             <Table rowKey="cOrderNo" loading={loading} dataSource={list} columns={this.columns} />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
+        <CreateProcessPanel {...parentMethods} modalVisible={modalVisible} />
       </PageHeaderWrapper>
     );
   }
