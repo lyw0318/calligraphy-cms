@@ -5,6 +5,7 @@ export default {
 
   state: {
     list: [],
+    count: 0,
     pages: 1,
     pageSize: 20,
   },
@@ -16,6 +17,7 @@ export default {
         type: 'save',
         payload: {
           list: response.data,
+          count: response.count,
         },
       });
     },

@@ -18,7 +18,7 @@ import {
 } from 'antd';
 // import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-
+import { stringify } from 'qs';
 import styles from './TableList.less';
 
 const FormItem = Form.Item;
@@ -100,6 +100,10 @@ class StudentList extends PureComponent {
         }
         return val;
       },
+    },
+    {
+      title: '快递单号',
+      dataIndex: 'expNo',
     },
     {
       title: '操作',
@@ -246,7 +250,7 @@ class StudentList extends PureComponent {
       this.setState({
         formValues: values,
       });
-
+      window.console.log('xxxxx', values);
       dispatch({
         type: 'student/fetch',
         payload: values,
@@ -318,6 +322,7 @@ class StudentList extends PureComponent {
     // 查询条件
     const {
       form: { getFieldDecorator },
+      form,
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -337,19 +342,16 @@ class StudentList extends PureComponent {
               {getFieldDecorator('issue')(<InputNumber style={{ width: '100%' }} />)}
             </FormItem>
           </Col>
-          {/* <Col md={8} sm={24}>
-            <FormItem label="课程状态">
-              {getFieldDecorator('status')(
+          <Col md={8} sm={24}>
+            <FormItem label="礼盒状态">
+              {getFieldDecorator('expStatus')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">预约</Option>
-                  <Option value="1">报名中</Option>
-                  <Option value="2">准备中</Option>
-                  <Option value="3">学习中</Option>
-                  <Option value="4">已结课</Option>
+                  <Option value="0">未发货</Option>
+                  <Option value="1">已发货</Option>
                 </Select>
               )}
             </FormItem>
-          </Col>  */}
+          </Col>
         </Row>
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
@@ -376,6 +378,12 @@ class StudentList extends PureComponent {
             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
               重置
             </Button>
+            <Button
+              style={{ marginLeft: 8 }}
+              href={`/calligraphy/manager/excel/course_student?${stringify(form.getFieldsValue())}`}
+            >
+              导出
+            </Button>
           </div>
         </div>
       </Form>
@@ -384,7 +392,7 @@ class StudentList extends PureComponent {
 
   render() {
     const {
-      student: { list },
+      student: { list, count },
       loading,
     } = this.props;
     const { modalVisible } = this.state;
@@ -399,7 +407,13 @@ class StudentList extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderAdvancedForm()}</div>
-            <Table rowKey="cOrderNo" loading={loading} dataSource={list} columns={this.columns} />
+            <Table
+              rowKey="cOrderNo"
+              loading={loading}
+              dataSource={list}
+              columns={this.columns}
+              title={() => `总数: ${count}`}
+            />
           </div>
         </Card>
         <CreateProcessPanel {...parentMethods} modalVisible={modalVisible} />
