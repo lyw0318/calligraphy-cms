@@ -24,7 +24,7 @@ export default [
     Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/student/taste', authority: ['admin', 'user'] },
+      { path: '/', redirect: '/student/buyed', authority: ['admin', 'user'] },
       {
         path: '/student',
         icon: 'table',
@@ -46,6 +46,12 @@ export default [
             component: './Student/StudentList',
           },
         ],
+      },
+      {
+        path: '/homework',
+        icon: 'table',
+        name: 'homework',
+        component: './Homework/HomeworkList',
       },
       // {
       //   path: '/list',

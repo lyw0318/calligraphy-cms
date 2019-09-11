@@ -3,6 +3,7 @@ export default {
   'menu.student.taste': '体验课',
   'menu.student.system': '系统程',
   'menu.student.buyed': '已购课用户',
+  'menu.homework': '作品管理',
 
   'menu.home': '首页',
   'menu.login': '登录',

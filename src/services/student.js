@@ -13,7 +13,3 @@ export async function queryStudent(params) {
 export async function queryCourseProcess(params) {
   return request(`/calligraphy/manager/course/process?${stringify(params)}`);
 }
-
-export async function queryCurrent() {
-  return request('/api/currentUser');
-}
