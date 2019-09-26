@@ -1,7 +1,7 @@
 /* eslint-disable no-script-url */
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Button, Table } from 'antd';
+import { Row, Col, Card, Form, Input, Select, Button, Table, InputNumber } from 'antd';
 // import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { stringify } from 'qs';
@@ -18,6 +18,14 @@ const { Option } = Select;
 @Form.create()
 class HomeworkList extends PureComponent {
   columns = [
+    {
+      title: '课程',
+      dataIndex: 'courseName',
+    },
+    {
+      title: '期数',
+      dataIndex: 'issue',
+    },
     {
       title: '作品编号',
       dataIndex: 'id',
@@ -54,6 +62,17 @@ class HomeworkList extends PureComponent {
       dataIndex: 'recommend',
       render: val => {
         return val ? '是' : '-';
+      },
+    },
+    {
+      title: '微信昵称',
+      dataIndex: 'wxNickname',
+    },
+    {
+      title: '微信头像',
+      dataIndex: 'wxIcon',
+      render: val => {
+        return val && <img src={val} width="42" height="42" alt="logo" />;
       },
     },
     {
@@ -149,6 +168,21 @@ class HomeworkList extends PureComponent {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
+            <FormItem label="课程类型">
+              {getFieldDecorator('groupId')(
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Option value="1">体验课</Option>
+                  <Option value="2">系统课</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="期数">
+              {getFieldDecorator('issue')(<InputNumber style={{ width: '100%' }} />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
             <FormItem label="作品状态">
               {getFieldDecorator('status')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
@@ -161,6 +195,8 @@ class HomeworkList extends PureComponent {
               )}
             </FormItem>
           </Col>
+        </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="是否上墙">
               {getFieldDecorator('recommend')(
@@ -171,8 +207,6 @@ class HomeworkList extends PureComponent {
               )}
             </FormItem>
           </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
             <FormItem label="点评人">
               {getFieldDecorator('teacherName')(<Input placeholder="请输入" />)}

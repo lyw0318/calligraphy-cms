@@ -88,6 +88,10 @@ class StudentList extends PureComponent {
       dataIndex: 'name',
     },
     {
+      title: '完课信息',
+      dataIndex: 'processStr',
+    },
+    {
       title: '电话',
       dataIndex: 'phone',
     },
