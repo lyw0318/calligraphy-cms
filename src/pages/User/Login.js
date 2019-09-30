@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi-plugin-react/locale';
 import Link from 'umi/link';
-import { Checkbox, Alert, Modal, Icon } from 'antd';
+import { Checkbox, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
 
@@ -35,10 +35,6 @@ class LoginPage extends Component {
           })
             .then(resolve)
             .catch(reject);
-
-          Modal.info({
-            title: formatMessage({ id: 'app.login.verification-code-warning' }),
-          });
         }
       });
     });
