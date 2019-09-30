@@ -218,6 +218,13 @@ class HomeworkList extends PureComponent {
             </FormItem>
           </Col>
         </Row>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+          <Col md={8} sm={24}>
+            <FormItem label="微信昵称">
+              {getFieldDecorator('wxNickname')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+        </Row>
         <div style={{ overflow: 'hidden' }}>
           <div style={{ marginBottom: 24 }}>
             <Button type="primary" htmlType="submit">
