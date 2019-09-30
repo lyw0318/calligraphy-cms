@@ -24,14 +24,14 @@ class LoginPage extends Component {
 
   onGetCaptcha = () =>
     new Promise((resolve, reject) => {
-      this.loginForm.validateFields(['mobile'], {}, (err, values) => {
+      this.loginForm.validateFields(['userName'], {}, (err, values) => {
         if (err) {
           reject(err);
         } else {
           const { dispatch } = this.props;
           dispatch({
             type: 'login/getCaptcha',
-            payload: values.mobile,
+            payload: values.userName,
           })
             .then(resolve)
             .catch(reject);
@@ -118,7 +118,7 @@ class LoginPage extends Component {
                 formatMessage({ id: 'app.login.message-invalid-verification-code' })
               )}
             <Mobile
-              name="mobile"
+              name="userName"
               placeholder={formatMessage({ id: 'form.phone-number.placeholder' })}
               rules={[
                 {
@@ -132,7 +132,7 @@ class LoginPage extends Component {
               ]}
             />
             <Captcha
-              name="captcha"
+              name="code"
               placeholder={formatMessage({ id: 'form.verification-code.placeholder' })}
               countDown={120}
               onGetCaptcha={this.onGetCaptcha}
