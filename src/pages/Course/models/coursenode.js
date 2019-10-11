@@ -1,12 +1,14 @@
-import { queryCourseNodeList } from '@/services/course-node';
+import queryCourseNodeList from '@/services/coursenode';
 
 export default {
-  namespace: 'CourseNodeCon',
+  namespace: 'coursenode',
 
   state: {
     list: [],
+    count: 0,
     pages: 1,
     pageSize: 20,
+    choose: {},
   },
 
   effects: {
@@ -16,6 +18,17 @@ export default {
         type: 'save',
         payload: {
           list: response.data,
+          count: response.count,
+        },
+      });
+    },
+
+    *choose({ payload }, { put }) {
+      console.log('choose ', payload.choose);
+      yield put({
+        type: 'save',
+        payload: {
+          choose: payload.choose,
         },
       });
     },
