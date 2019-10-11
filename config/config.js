@@ -82,7 +82,7 @@ export default {
   },
   proxy: {
     '/calligraphy': {
-      target: 'http://cms.snyjjy.cn',
+      target: 'http://127.0.0.1:3004',
       changeOrigin: true,
     },
   },

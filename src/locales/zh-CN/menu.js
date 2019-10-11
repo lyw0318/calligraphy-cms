@@ -4,6 +4,9 @@ export default {
   'menu.student.system': '系统程',
   'menu.student.buyed': '已购课用户',
   'menu.homework': '作品管理',
+  'menu.course': '课程管理',
+  'menu.course.package': '课包管理',
+  'menu.course.node': '课时管理',
 
   'menu.home': '首页',
   'menu.login': '登录',

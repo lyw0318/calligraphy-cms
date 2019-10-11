@@ -53,6 +53,23 @@ export default [
         name: 'homework',
         component: './Homework/HomeworkList',
       },
+      {
+        path: '/course',
+        icon: 'table',
+        name: 'course',
+        routes: [
+          {
+            path: '/course/package',
+            name: 'package',
+            component: './Course/CoursePackageList',
+          },
+          {
+            path: '/course/node',
+            name: 'node',
+            component: './Course/CourseNodeList',
+          },
+        ],
+      },
       // {
       //   path: '/list',
       //   icon: 'table',
