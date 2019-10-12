@@ -1,4 +1,4 @@
-import queryCourseNodeList from '@/services/coursenode';
+import { queryCourseNodeList, postCourseNode } from '@/services/coursenode';
 
 export default {
   namespace: 'coursenode',
@@ -30,6 +30,13 @@ export default {
         payload: {
           choose: payload.choose,
         },
+      });
+    },
+
+    *update({ payload }, { call, put }) {
+      yield call(postCourseNode, payload);
+      yield put({
+        type: 'fetch',
       });
     },
   },

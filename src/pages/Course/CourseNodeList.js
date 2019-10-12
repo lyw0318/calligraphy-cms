@@ -1,5 +1,6 @@
 /* eslint-disable no-script-url */
 import React, { Fragment, PureComponent } from 'react';
+import copy from 'copy-to-clipboard';
 import { connect } from 'dva';
 import {
   Row,
@@ -81,13 +82,15 @@ class HomeworkList extends PureComponent {
             修改
           </a>
           <Divider type="vertical" />
-          <a href="javascript:;" onClick={() => this.handleModalVisible(true, record.id)}>
+          <a href="javascript:;" onClick={() => this.handleCopy(record.id)}>
             预览
           </a>
           <Divider type="vertical" />
-          <a href="javascript:;" onClick={() => this.handleModalVisible(true, record.id)}>
-            删除
-          </a>
+          {record.canDel && (
+            <a href="javascript:;" onClick={() => this.handleDelete(record)}>
+              删除
+            </a>
+          )}
         </Fragment>
       ),
     },
@@ -96,7 +99,7 @@ class HomeworkList extends PureComponent {
   CreateForm = Form.create()(props => {
     const { modalVisible, form, handleAdd, handleModalVisible, choose } = props;
     console.log(props);
-    console.log(choose);
+    console.log('choose::;', choose);
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
@@ -112,15 +115,54 @@ class HomeworkList extends PureComponent {
         onOk={okHandle}
         onCancel={() => handleModalVisible()}
       >
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="课程名称">
-          {form.getFieldDecorator('name', {
-            rules: [{ required: true, message: '请输入至少五个字符！', min: 5 }],
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="科目">
+          {form.getFieldDecorator('groupId', {
+            initialValue: (choose && choose.gid && choose.gid.toString()) || '2',
+          })(
+            <Select placeholder="请选择">
+              <Option value="1">体验课</Option>
+              <Option value="2">系统课</Option>
+            </Select>
+          )}
+        </FormItem>
+        {choose && choose.seq && (
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="序号">
+            {form.getFieldDecorator('seq', {
+              initialValue: choose && choose.seq,
+              rules: [{ required: true, message: '请输入序号！' }],
+            })(<InputNumber />)}
+          </FormItem>
+        )}
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="课程类型">
+          {form.getFieldDecorator('type', {
+            initialValue: (choose && choose.type && choose.type.toString()) || '1',
+          })(
+            <Select placeholder="请选择">
+              <Option value="1">字</Option>
+              <Option value="2">闯关小能手</Option>
+              <Option value="2">重点笔画</Option>
+            </Select>
+          )}
+        </FormItem>
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="课程内容">
+          {form.getFieldDecorator('writing', {
+            initialValue: choose && choose.writing && choose.writing.toString(),
+            rules: [{ required: true, message: '请输入至少1个字符！', min: 1 }],
           })(<Input placeholder="请输入" />)}
         </FormItem>
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="课程期数">
-          {form.getFieldDecorator('issue', {
+
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="视频链接">
+          {form.getFieldDecorator('srcUrl', {
+            initialValue: choose && choose.srcUrl && choose.srcUrl.toString(),
             rules: [{ required: true }],
-          })(<InputNumber placeholder="请输入" />)}
+          })(<Input placeholder="请输入" />)}
+        </FormItem>
+
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="gif链接">
+          {form.getFieldDecorator('issue', {
+            initialValue: choose && choose.gifUrl && choose.gifUrl.toString(),
+            rules: [{ required: true }],
+          })(<Input placeholder="请输入" />)}
         </FormItem>
       </Modal>
     );
@@ -168,15 +210,13 @@ class HomeworkList extends PureComponent {
 
   handleModalVisible = (flag, courseNode) => {
     console.log(courseNode);
-    if (courseNode) {
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'coursenode/choose',
-        payload: {
-          choose: courseNode,
-        },
-      });
-    }
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'coursenode/choose',
+      payload: {
+        choose: courseNode,
+      },
+    });
     console.log(this.props);
 
     this.setState({
@@ -184,12 +224,38 @@ class HomeworkList extends PureComponent {
     });
   };
 
+  handleCopy = fields => {
+    console.log('handleCopy::', fields);
+    copy(`https://svrwx.snyjjy.cn/mycourseDetail/${fields}`);
+    message.success('删除成功');
+  };
+
+  handleDelete = fields => {
+    const { dispatch } = this.props;
+    console.log('handleDelete::', fields);
+    dispatch({
+      type: 'coursenode/update',
+      payload: {
+        id: fields.id,
+        isDel: true,
+      },
+    });
+    message.success('删除成功');
+  };
+
   handleAdd = fields => {
     const { dispatch } = this.props;
+    console.log('handleAdd::', fields);
     dispatch({
-      type: 'rule/add',
+      type: 'coursenode/update',
       payload: {
-        desc: fields.desc,
+        id: fields.id,
+        writing: fields.writing,
+        gid: fields.groupId,
+        issue: fields.issue,
+        seq: fields.seq,
+        srcUrl: fields.srcUrl,
+        type: fields.type,
       },
     });
 
@@ -228,6 +294,9 @@ class HomeworkList extends PureComponent {
             </Button>
             <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
               重置
+            </Button>
+            <Button style={{ marginLeft: 8 }} onClick={() => this.handleModalVisible(true, null)}>
+              新增
             </Button>
           </div>
         </div>
