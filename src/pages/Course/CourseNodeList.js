@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   Select,
+  Switch,
   Button,
   Table,
   InputNumber,
@@ -45,10 +46,6 @@ class HomeworkList extends PureComponent {
         };
         return `${statusObj[val]}`;
       },
-    },
-    {
-      title: '课程id',
-      dataIndex: 'id',
     },
     {
       title: '序号',
@@ -97,15 +94,22 @@ class HomeworkList extends PureComponent {
   ];
 
   CreateForm = Form.create()(props => {
-    const { modalVisible, form, handleAdd, handleModalVisible, choose } = props;
+    const { modalVisible, form, handleAdd, handleModalVisible, choose, groupSeq } = props;
+
     console.log(props);
     console.log('choose::;', choose);
+    console.log('groupSeq::;', groupSeq);
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
         handleAdd(fieldsValue);
       });
+    };
+    const changeHandle = () => {
+      const groupId = form.getFieldValue('groupId');
+      console.log('groupId:::', groupId);
+      // groupSeq[groupId]
     };
     return (
       <Modal
@@ -119,20 +123,20 @@ class HomeworkList extends PureComponent {
           {form.getFieldDecorator('groupId', {
             initialValue: (choose && choose.gid && choose.gid.toString()) || '2',
           })(
-            <Select placeholder="请选择">
+            <Select placeholder="请选择" disabled={choose && choose.gid && choose.gid.toString()}>
               <Option value="1">体验课</Option>
               <Option value="2">系统课</Option>
             </Select>
           )}
         </FormItem>
-        {choose && choose.seq && (
-          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="序号">
-            {form.getFieldDecorator('seq', {
-              initialValue: choose && choose.seq,
-              rules: [{ required: true, message: '请输入序号！' }],
-            })(<InputNumber />)}
-          </FormItem>
-        )}
+
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="序号">
+          {form.getFieldDecorator('seq', {
+            initialValue: (choose && choose.seq) || groupSeq[form.getFieldValue('groupId')] + 1,
+            rules: [{ required: true, message: '请输入序号！' }],
+          })(<InputNumber disabled />)}
+        </FormItem>
+
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="课程类型">
           {form.getFieldDecorator('type', {
             initialValue: (choose && choose.type && choose.type.toString()) || '1',
@@ -140,7 +144,7 @@ class HomeworkList extends PureComponent {
             <Select placeholder="请选择">
               <Option value="1">字</Option>
               <Option value="2">闯关小能手</Option>
-              <Option value="2">重点笔画</Option>
+              <Option value="3">重点笔画</Option>
             </Select>
           )}
         </FormItem>
@@ -151,19 +155,42 @@ class HomeworkList extends PureComponent {
           })(<Input placeholder="请输入" />)}
         </FormItem>
 
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="视频链接">
-          {form.getFieldDecorator('srcUrl', {
-            initialValue: choose && choose.srcUrl && choose.srcUrl.toString(),
-            rules: [{ required: true }],
-          })(<Input placeholder="请输入" />)}
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="自动视频地址">
+          {form.getFieldDecorator('autoUrl', {})(
+            <Switch defaultChecked={false} onChange={changeHandle} />
+          )}
         </FormItem>
 
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="gif链接">
-          {form.getFieldDecorator('issue', {
-            initialValue: choose && choose.gifUrl && choose.gifUrl.toString(),
-            rules: [{ required: true }],
-          })(<Input placeholder="请输入" />)}
+        {!form.getFieldValue('autoUrl') && (
+          <Fragment>
+            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="视频链接">
+              {form.getFieldDecorator('srcUrl', {
+                initialValue: choose && choose.srcUrl && choose.srcUrl.toString(),
+                rules: [{ required: true }],
+              })(<Input placeholder="请输入" />)}
+            </FormItem>
+            <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="示范视频">
+              {form.getFieldDecorator('exampleUrl', {
+                initialValue: choose && choose.exampleUrl && choose.exampleUrl.toString(),
+                rules: [{ required: true }],
+              })(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Fragment>
+        )}
+
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="自动gif地址">
+          {form.getFieldDecorator('autoGif', {})(
+            <Switch defaultChecked={false} onChange={changeHandle} />
+          )}
         </FormItem>
+        {!form.getFieldValue('autoGif') && (
+          <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="gif链接">
+            {form.getFieldDecorator('gifUrl', {
+              initialValue: choose && choose.gifUrl && choose.gifUrl.toString(),
+              rules: [{ required: false }],
+            })(<Input placeholder="请输入" />)}
+          </FormItem>
+        )}
       </Modal>
     );
   });
@@ -226,8 +253,8 @@ class HomeworkList extends PureComponent {
 
   handleCopy = fields => {
     console.log('handleCopy::', fields);
-    copy(`https://svrwx.snyjjy.cn/mycourseDetail/${fields}`);
-    message.success('删除成功');
+    copy(`http://svrwx.snyjjy.cn/mycourseDetail/${fields}`);
+    message.success('地址已复制，请在微信预览');
   };
 
   handleDelete = fields => {
@@ -249,13 +276,17 @@ class HomeworkList extends PureComponent {
     dispatch({
       type: 'coursenode/update',
       payload: {
+        ...fields,
         id: fields.id,
         writing: fields.writing,
         gid: fields.groupId,
         issue: fields.issue,
         seq: fields.seq,
         srcUrl: fields.srcUrl,
+        exampleUrl: fields.exampleUrl,
         type: fields.type,
+        autoUrl: fields.autoUrl,
+        autoGif: fields.autoGif,
       },
     });
 
@@ -306,7 +337,7 @@ class HomeworkList extends PureComponent {
 
   render() {
     const {
-      coursenode: { list, count, choose },
+      coursenode: { list, count, choose, groupSeq },
       loading,
     } = this.props;
     const { modalVisible } = this.state;
@@ -331,7 +362,12 @@ class HomeworkList extends PureComponent {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} choose={choose} />
+        <CreateForm
+          {...parentMethods}
+          modalVisible={modalVisible}
+          choose={choose}
+          groupSeq={groupSeq}
+        />
       </PageHeaderWrapper>
     );
   }

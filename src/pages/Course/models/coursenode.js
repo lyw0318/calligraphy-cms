@@ -6,19 +6,37 @@ export default {
   state: {
     list: [],
     count: 0,
+    groupSeq: {},
     pages: 1,
     pageSize: 20,
     choose: {},
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    *fetch({ payload }, { call, put, select }) {
+      const { groupSeq } = yield select(({ coursenode }) => coursenode);
       const response = yield call(queryCourseNodeList, payload);
+      console.log(
+        'sss',
+        response.data.filter(e => e.canDel).filter(e => e.gid === 1).length > 0 &&
+          response.data.filter(e => e.canDel).filter(e => e.gid === 1)[0].seq
+      );
+      console.log('sss groupSeq::', groupSeq);
       yield put({
         type: 'save',
         payload: {
           list: response.data,
           count: response.count,
+          groupSeq: {
+            1:
+              response.data.filter(e => e.canDel).filter(e => e.gid === 1).length > 0
+                ? response.data.filter(e => e.canDel).filter(e => e.gid === 1)[0].seq
+                : groupSeq[1],
+            2:
+              response.data.filter(e => e.canDel).filter(e => e.gid === 2).length > 0
+                ? response.data.filter(e => e.canDel).filter(e => e.gid === 2)[0].seq
+                : groupSeq[2],
+          },
         },
       });
     },
