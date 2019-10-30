@@ -70,6 +70,18 @@ export default [
           },
         ],
       },
+      {
+        path: '/express',
+        icon: 'table',
+        name: 'express',
+        routes: [
+          {
+            path: '/express/upload',
+            name: 'upload',
+            component: './Express/ExpressUpload',
+          },
+        ],
+      },
       // {
       //   path: '/list',
       //   icon: 'table',
