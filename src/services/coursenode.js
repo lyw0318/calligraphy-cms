@@ -2,6 +2,7 @@ import request from '@/utils/request';
 import { stringify } from 'qs';
 
 export async function queryCourseNodeList(params) {
+  console.log(params, 'paramsparamsparamsparams');
   return request(`/calligraphy/manager/course/nodelist?${stringify(params)}`);
 }
 

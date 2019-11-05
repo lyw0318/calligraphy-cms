@@ -7,15 +7,15 @@ export default {
     list: [],
     count: 0,
     groupSeq: {},
-    pages: 1,
+    page: 1,
     pageSize: 20,
     choose: {},
   },
 
   effects: {
     *fetch({ payload }, { call, put, select }) {
-      const { groupSeq } = yield select(({ coursenode }) => coursenode);
-      const response = yield call(queryCourseNodeList, payload);
+      const { groupSeq, page, pageSize } = yield select(({ coursenode }) => coursenode);
+      const response = yield call(queryCourseNodeList, { ...payload, page, pageSize });
       console.log(
         'sss',
         response.data.filter(e => e.canDel).filter(e => e.gid === 1).length > 0 &&

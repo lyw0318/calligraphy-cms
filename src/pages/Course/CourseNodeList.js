@@ -294,6 +294,21 @@ class HomeworkList extends PureComponent {
     this.handleModalVisible();
   };
 
+  changePage = page => {
+    // console.log(page, pageSize)
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'coursenode/save',
+      payload: {
+        page,
+      },
+    });
+
+    dispatch({
+      type: 'coursenode/fetch',
+    });
+  };
+
   renderAdvancedForm() {
     // 查询条件
     const {
@@ -337,7 +352,7 @@ class HomeworkList extends PureComponent {
 
   render() {
     const {
-      coursenode: { list, count, choose, groupSeq },
+      coursenode: { list, count, choose, groupSeq, page, pageSize },
       loading,
     } = this.props;
     const { modalVisible } = this.state;
@@ -347,6 +362,12 @@ class HomeworkList extends PureComponent {
     };
 
     const { CreateForm } = this;
+    const pagination = {
+      total: count,
+      defaultCurrent: page,
+      defaultPageSize: pageSize,
+      onChange: this.changePage,
+    };
 
     return (
       <PageHeaderWrapper title="查询表格">
@@ -359,6 +380,7 @@ class HomeworkList extends PureComponent {
               dataSource={list}
               columns={this.columns}
               title={() => `总数: ${count}`}
+              pagination={pagination}
             />
           </div>
         </Card>
